@@ -11,14 +11,21 @@ from dotenv import load_dotenv
 load_dotenv()
 app = FastAPI()
 
+# -------- Models --------
 class StudentInput(BaseModel):
     name: str
     email: EmailStr
+
+class StudentOutput(StudentInput):
+    id: int
 
 class CourseInput(BaseModel):
     name: str
     course_type: str
     base_price: float
+
+class CourseOutput(CourseInput):
+    id: int
 
 class EnrollmentInput(BaseModel):
     student_id: int
@@ -35,30 +42,59 @@ class EnrollmentInput(BaseModel):
             raise ValueError("Refund date must be after enrollment date")
         return v
 
-@app.post("/students")
+class EnrollmentOutput(EnrollmentInput):
+    id: int
+
+# -------- Routes --------
+@app.post("/students", response_model=StudentOutput)
 def create_student(data: StudentInput):
     try:
         return student.add_student(data.name, data.email)
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
-    
 
+@app.get("/students", response_model=List[StudentOutput])
+def list_students():
+    try:
+        return student.get_all_students()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
-@app.post("/courses")
+@app.post("/courses", response_model=CourseOutput)
 def create_course(data: CourseInput):
     try:
         return course.add_course(data.name, data.course_type, data.base_price)
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
-@app.post("/enrolled")
+@app.get("/courses", response_model=List[CourseOutput])
+def list_courses():
+    try:
+        return course.get_all_courses()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/enrollments", response_model=EnrollmentOutput)
 def enroll_student(data: EnrollmentInput):
     try:
+        # Prevent duplicate enrollment
+        existing = enrollment.get_enrollment_by_student_course(data.student_id, data.course_id)
+        if existing:
+            raise HTTPException(status_code=400, detail="Student already enrolled in this course")
         return enrollment.add_enrollment(
             data.student_id, data.course_id, data.enrolled_at, data.is_refunded, data.refund_date
         )
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
+
+@app.get("/enrollments", response_model=List[EnrollmentOutput])
+def list_enrollments():
+    try:
+        return enrollment.get_all_enrollments()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/commission", response_model=List[CommissionReport])
 def commission_report():
@@ -70,30 +106,17 @@ def commission_report():
 @app.get("/commission-report/download")
 def download_commission_report():
     try:
-        # Generate Excel → Upload to MinIO → Get presigned URL
         url = report_service.get_excel_report_and_upload()
         return JSONResponse(content={"download_url": url})
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+from fastapi.middleware.cors import CORSMiddleware
 
-@app.get("/allstudents", response_model=List[StudentInput])
-def list_students():
-    try:
-        return student.get_all_students()
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-    
-@app.get("/allcourses", response_model=List[CourseInput])
-def list_courses():
-    try:
-        return course.get_all_courses()
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-    
-@app.get("/allenrollments", response_model=List[EnrollmentInput])
-def list_enrollments():
-    try:
-        return enrollment.get_all_enrollments()
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # For testing, allow all; later restrict to your frontend URL
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
