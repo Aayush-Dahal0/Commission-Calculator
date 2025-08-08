@@ -20,3 +20,21 @@ def add_student(name:str, email:str):
     finally:
         cur.close()
         conn.close()
+
+def get_all_students():
+    conn=get_db_connection()
+    cur=conn.cursor()
+    try:
+        cur.execute("SELECT id, name, email FROM students;")
+        rows=cur.fetchall()
+        students=[{"id": row[0], "name": row[1], "email": row[2]} for row in rows]
+        return students
+    except Exception as e:
+        conn.rollback()
+        raise e
+    finally:
+        cur.close()
+        conn.close()
+   
+
+    
