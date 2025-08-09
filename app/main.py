@@ -7,6 +7,7 @@ from app.models import student, course, enrollment
 from app.services import report_service
 from app.schema.report import CommissionReport
 from dotenv import load_dotenv
+from fastapi.middleware.cors import CORSMiddleware
 
 load_dotenv()
 app = FastAPI()
@@ -51,12 +52,10 @@ def create_student(data: StudentInput):
     try:
         return student.add_student(data.name, data.email)
     except Exception as e:
-        print("Error in create_student:", repr(e))
         err_msg = str(e).lower()
         if "duplicate key" in err_msg or "unique constraint" in err_msg:
             raise HTTPException(status_code=400, detail="Email already exists")
         raise HTTPException(status_code=400, detail=str(e))
-
 
 @app.get("/students", response_model=List[StudentOutput])
 def list_students():
@@ -82,10 +81,10 @@ def list_courses():
 @app.post("/enrollments", response_model=EnrollmentOutput)
 def enroll_student(data: EnrollmentInput):
     try:
-        # Prevent duplicate enrollment
         existing = enrollment.get_enrollment_by_student_course(data.student_id, data.course_id)
         if existing:
             raise HTTPException(status_code=400, detail="Student already enrolled in this course")
+
         return enrollment.add_enrollment(
             data.student_id, data.course_id, data.enrolled_at, data.is_refunded, data.refund_date
         )
@@ -116,11 +115,10 @@ def download_commission_report():
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-from fastapi.middleware.cors import CORSMiddleware
-
+# CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # For testing, allow all; later restrict to your frontend URL
+    allow_origins=["*"],  # For testing
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

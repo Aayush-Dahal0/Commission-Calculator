@@ -1,0 +1,75 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: #eef1f5; /* softer neutral background */
+}
+
+.dashboard {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  background-color: #4a90e2; /* calm blue */
+  color: white;
+  padding: 15px 30px;
+  font-size: 1.8rem;
+  font-weight: bold;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.tab-buttons {
+  display: flex;
+  gap: 10px;
+  background: white;
+  padding: 10px 20px;
+  border-bottom: 1px solid #ddd;
+}
+
+.tab-buttons button {
+  padding: 10px 20px;
+  border: none;
+  background: transparent;
+  font-size: 1rem;
+  cursor: pointer;
+  color: #555;
+  transition: all 0.2s ease;
+}
+
+.tab-buttons button:hover {
+  color: #4a90e2;
+}
+
+.tab-buttons button.active {
+  background: #4a90e2;
+  color: white;
+  border-radius: 4px;
+}
+
+.tab-content {
+  flex: 1;
+  padding: 20px;
+  background: #f9fafc;
+}
+html, body, #root {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+}
+
+.dashboard {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+}
+
+.tab-content {
+  flex: 1;
+  padding: 20px;
+  background: #f9fafc;
+  overflow-y: auto;
+}
