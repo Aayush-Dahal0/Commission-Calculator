@@ -1,22 +1,16 @@
 import StudentForm from "./components/StudentForm";
+import CourseForm from "./components/CourseForm";
+import EnrollmentForm from "./components/EnrollmentForm";
+import CommissionReport from "./components/CommissionReport";
 
-function App() {
+export default function App() {
   return (
-    <div className="max-w-4xl mx-auto p-4">
-      <h1 className="text-3xl font-bold mb-6 text-center">
-        📊 Commission Calculator
-      </h1>
-
-      {/* Student Section */}
+    <div style={{ padding: "20px" }}>
+      <h1>Commission Calculator</h1>
       <StudentForm />
-
-      {/* Later we will add:
-        <CourseForm />
-        <EnrollmentForm />
-        <CommissionReport />
-      */}
+      <CourseForm />
+      <EnrollmentForm />
+      <CommissionReport />
     </div>
   );
 }
-
-export default App;

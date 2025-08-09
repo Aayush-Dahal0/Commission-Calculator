@@ -14,7 +14,7 @@ CREATE TABLE students (
 CREATE TABLE courses (
     id SERIAL PRIMARY KEY,
     name TEXT NOT NULL,
-    course_type TEXT NOT NULL CHECK (type IN ('recorded', 'live')),
+    course_type TEXT NOT NULL CHECK (course_type IN ('recorded', 'live')),
     base_price NUMERIC NOT NULL
 );
 
@@ -23,7 +23,8 @@ CREATE TABLE enrollments (
     id SERIAL PRIMARY KEY,
     student_id INT REFERENCES students(id) ON DELETE CASCADE,
     course_id INT REFERENCES courses(id) ON DELETE CASCADE,
-    enrolled_at DATE NOT NULL,
+    enrolled_at DATE NOT NULL DEFAULT CURRENT_DATE,
     is_refunded BOOLEAN DEFAULT FALSE,
-    refund_date DATE
+    refund_date DATE,
+    CONSTRAINT unique_student_course UNIQUE (student_id, course_id)
 );

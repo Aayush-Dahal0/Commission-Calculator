@@ -11,13 +11,18 @@ export default function StudentForm() {
     setStudents(res.data);
   };
 
-  const addStudent = async (e) => {
-    e.preventDefault();
+ const addStudent = async (e) => {
+  e.preventDefault();
+  try {
     await api.post("/students", { name, email });
     setName("");
     setEmail("");
     fetchStudents();
-  };
+  } catch (err) {
+    alert(err.response?.data?.detail || "Something went wrong");
+  }
+};
+
 
   useEffect(() => {
     fetchStudents();

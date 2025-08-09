@@ -51,7 +51,12 @@ def create_student(data: StudentInput):
     try:
         return student.add_student(data.name, data.email)
     except Exception as e:
+        print("Error in create_student:", repr(e))
+        err_msg = str(e).lower()
+        if "duplicate key" in err_msg or "unique constraint" in err_msg:
+            raise HTTPException(status_code=400, detail="Email already exists")
         raise HTTPException(status_code=400, detail=str(e))
+
 
 @app.get("/students", response_model=List[StudentOutput])
 def list_students():

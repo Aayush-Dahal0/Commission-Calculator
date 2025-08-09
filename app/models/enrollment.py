@@ -1,6 +1,7 @@
 from app.db import get_db_connection
 from datetime import date
-def add_enrollment(student_id, course_id, enrolled_at, is_refunded, refund_date):
+
+def add_enrollment(student_id, course_id, enrolled_at=None, is_refunded=False, refund_date=None):
     conn = get_db_connection()
     cur = conn.cursor()
 
@@ -13,9 +14,14 @@ def add_enrollment(student_id, course_id, enrolled_at, is_refunded, refund_date)
         if cur.fetchone():
             raise Exception("This student is already enrolled in the course.")
 
+        # Use today's date if enrolled_at is None
+        if not enrolled_at:
+            enrolled_at = date.today()
+
         cur.execute("""
             INSERT INTO enrollments(student_id, course_id, enrolled_at, is_refunded, refund_date)
-            VALUES(%s, %s, COALESCE(%s, CURRENT_DATE), %s, %s) RETURNING id;
+            VALUES (%s, %s, %s, %s, %s)
+            RETURNING id;
         """, (student_id, course_id, enrolled_at, is_refunded, refund_date))
 
         enrollment_id = cur.fetchone()[0]
@@ -29,12 +35,14 @@ def add_enrollment(student_id, course_id, enrolled_at, is_refunded, refund_date)
             "is_refunded": is_refunded,
             "refund_date": refund_date
         }
+
     except Exception as e:
         conn.rollback()
         raise e
     finally:
         cur.close()
         conn.close()
+
 
 def get_all_enrollments():
     conn = get_db_connection()
@@ -46,7 +54,7 @@ def get_all_enrollments():
             FROM enrollments;
         """)
         rows = cur.fetchall()
-        enrollments = [
+        return [
             {
                 "id": row[0],
                 "student_id": row[1],
@@ -54,9 +62,9 @@ def get_all_enrollments():
                 "enrolled_at": row[3],
                 "is_refunded": row[4],
                 "refund_date": row[5]
-            } for row in rows
+            }
+            for row in rows
         ]
-        return enrollments
     except Exception as e:
         conn.rollback()
         raise e
