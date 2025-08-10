@@ -11,7 +11,8 @@ export default function App() {
   return (
     <div className="dashboard">
       <div className="header">Commission Calculator</div>
-      
+
+      {/* Tab Navigation */}
       <div className="tab-buttons">
         <button
           className={activeTab === "students" ? "active" : ""}
@@ -32,18 +33,19 @@ export default function App() {
           Enrollments
         </button>
         <button
-          className={activeTab === "reports" ? "active" : ""}
-          onClick={() => setActiveTab("reports")}
+          className={activeTab === "report" ? "active" : ""}
+          onClick={() => setActiveTab("report")}
         >
-          Commission Reports
+          Commission Report
         </button>
       </div>
 
+      {/* Tab Content */}
       <div className="tab-content">
         {activeTab === "students" && <StudentForm />}
         {activeTab === "courses" && <CourseForm />}
         {activeTab === "enrollments" && <EnrollmentForm />}
-        {activeTab === "reports" && <CommissionReport />}
+        {activeTab === "report" && <CommissionReport />}
       </div>
     </div>
   );

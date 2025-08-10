@@ -30,7 +30,9 @@ export default function CourseForm() {
 
   return (
     <div className="box">
-      <h2>Add Course</h2>
+     <h2 style={{ fontSize: "20px", fontWeight: "bold", marginBottom: "12px", color: "#333" }}>
+  Add Course
+</h2>
       <form onSubmit={addCourse}>
         <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Course Name" required />
         <select value={courseType} onChange={(e) => setCourseType(e.target.value)}>

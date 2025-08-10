@@ -33,7 +33,9 @@ export default function CommissionReport() {
 
   return (
     <div className="box">
-      <h2>Commission Report</h2>
+      <h2 style={{ fontSize: "20px", fontWeight: "bold", marginBottom: "12px", color: "#333" }}>
+  Commission Report
+</h2>
       <button onClick={fetchReport}>
         {showReport ? "Hide Report" : "View Report"}
       </button>

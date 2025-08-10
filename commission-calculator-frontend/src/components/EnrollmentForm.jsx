@@ -60,7 +60,9 @@ export default function EnrollmentForm() {
 
   return (
     <div className="box">
-      <h2>Enroll Student</h2>
+     <h2 style={{ fontSize: "20px", fontWeight: "bold", marginBottom: "12px", color: "#333" }}>
+  Enroll Student
+</h2>
       {errorMsg && <div style={{ color: "red" }}>{errorMsg}</div>}
       {successMsg && <div style={{ color: "green" }}>{successMsg}</div>}
       <form onSubmit={enrollStudent}>
@@ -84,7 +86,7 @@ export default function EnrollmentForm() {
 
         <input type="date" value={enrolledAt} onChange={(e) => setEnrolledAt(e.target.value)} required />
 
-        <label>
+        <label style={{ fontSize: "20px",marginBottom: "12px", color: "#333" }}>
           <input
             type="checkbox"
             checked={isRefunded}
